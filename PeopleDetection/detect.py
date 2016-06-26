@@ -1,6 +1,20 @@
 import cv2
 import numpy as np
 
+#
+use_hog = False
+hog = cv2.HOGDescriptor()
+hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
+def detect_hog(image, original):
+    #detect
+    (rects, weights) = hog.detectMultiScale(image, winStride=(4,4), padding=(8,8), scale=1.05)
+
+    #draw
+    for (x, y, w, h) in rects:
+        cv2.rectangle(original, (x,y), (x+w, y+h), (0, 255, 255), 2)
+
+    cv2.imshow('Hog detect', original)
+
 # Postavljanje putanje do fajla u kome se vrsi detektovanje
 video_path = "test_video/TownCentreXVID.avi"
 
@@ -76,6 +90,8 @@ while (cap.isOpened()):
     cv2.imshow('Detektovano rgb', rgb)
     cv2.imshow('Detektovano sivo', gray)
     mark_people(gray.copy(), frame2_org.copy())
+    if use_hog:
+        detect_hog(frame2_org.copy(), frame2_org.copy())
 
     k = cv2.waitKey(30) & 0xff
     if k == ord('q'):
